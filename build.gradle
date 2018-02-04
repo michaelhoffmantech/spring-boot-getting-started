@@ -33,6 +33,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.liquibase:liquibase-core')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('javax.xml.bind:jaxb-api:2.3.0')
 	runtime('org.springframework.boot:spring-boot-devtools')
 	runtime('com.h2database:h2')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
