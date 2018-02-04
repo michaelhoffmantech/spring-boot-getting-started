@@ -110,3 +110,6 @@ Now run the command ".\gradlew bootRun" and it should run successfully with the 
 2018-02-04 11:12:33.245  INFO 12952 --- [  restartedMain] com.example.demo.DemoApplication         : Started DemoApplication in 11.638 seconds (JVM running for 12.499)
 ```
 
+You can verify the application is up by hitting the URL: 
+
+http://localhost:8080/actuator/health
