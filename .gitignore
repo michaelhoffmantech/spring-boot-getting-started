@@ -1,12 +1,22 @@
-# Compiled class file
-*.class
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
 
-# Log file
-*.log
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
 
-# BlueJ files
-*.ctxt
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
 
+<<<<<<< HEAD
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
@@ -25,3 +35,12 @@ hs_err_pid*
 /.idea/
 /build/
 /spring-boot-getting-started.iml
+=======
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+>>>>>>> refs/heads/1-start-spring-io
