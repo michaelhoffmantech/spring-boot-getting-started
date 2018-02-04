@@ -11,4 +11,5 @@ Some highlights of my background:
 * I work for NVISIA based out of Chicago and Milwaukee. We are a consultancy providing product development, legacy modernization, IT strategy and agile strategy services. Our primary focus is on Java-based solutions. 
 * I've been working with Spring Boot since it was first released in 2014 and watched it grow and mature over the past three years from an unknown framework to a leader in providing rapid development of server-based applications, especially in the realm of REST-based microservices. 
 
+I'll be starting by demonstrating the creation of a Spring Boot application. I'll be generating the code assets using the website (http://start.spring.io)
  
