@@ -1,10 +1,12 @@
 package com.scmc.bootdemo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,5 +33,18 @@ class ServiceInstanceRestController {
 	public List<ServiceInstance> serviceInstancesByApplicationName(
 			@PathVariable String applicationName) {
 		return this.discoveryClient.getInstances(applicationName);
+	}
+}
+
+@RefreshScope
+@RestController
+class MessageRestController {
+
+	@Value("${title:Default Title}")
+	private String title;
+
+	@RequestMapping("/title")
+	String getTitle() {
+		return this.title;
 	}
 }
