@@ -22,13 +22,13 @@ Here are some details on selections and entries from this form:
 
 * Build tool - selecting Gradle to leverage code for our build scripts over XML configuration. 
 * Language - selecting Java, but also options available for JVM languages Kotlin and Groovy
-* Spring Boot Version - going to use the new version 2.0 release candidate. 
+* Spring Boot Version - going to use the latest 1.5 version. 
 * Group = com.scmc
 * Artifact = boot-demo
 * Name = boot-demo
 * Package Name = com.scmc.bootdemo
 * Packaging = JAR
-* Java Version = 9
+* Java Version = 8
 * Dependencies = DevTools, Actuator, Web, JPA, H2, Liquibase
 
 Once selections and entries are complete, click create and the project will be generated and downloaded as a zip file.
@@ -36,24 +36,6 @@ Once selections and entries are complete, click create and the project will be g
 Copy the files from the zip file into the project's root directory. 
 
 Let's try running the command to start the application, ".\gradlew bootRun"
-
-You might get a failure due to Java 9. 
-
-## Updating the Gradle Wrapper
-
-The RC of Spring Boot was not setting the correct version of Gradle to use with Java 9, so I needed to add the following in the build.gradle file:
-
-```
-task wrapper(type: Wrapper) {
-	gradleVersion = '4.5'
-}
-```
-
-I deleted the .gradle folder and gradlew wrapper files (make sure you don't delete the build.gradle file), then I ran the command "gradle wrapper" from the root directory. 
-
-Now try running the start command again, ".\gradlew bootRun". 
-
-You should get another failure.
 
 ## Fixing the Liquibase Error
 
@@ -93,23 +75,6 @@ databaseChangeLog:
                     nullable: false
 ```
 
-Try running the command ".\gradlew bootRun" and again you will get a failure. 
-
-## Fixing the missing JAXB dependency from Hibernate
-
-As part of changes in Java 9, JAXB is no longer correctly brought in by the Spring Initializr project. Hibernate will cause a ClassNotFoundException due to the missing dependency. 
-
-To fix this, open the build.gradle file and add the dependency below:
-
-compile('javax.xml.bind:jaxb-api:2.3.0')
-
-Now run the command ".\gradlew bootRun" and it should run successfully with the message below at the conclusion of the log:
-
-```
-2018-02-04 11:12:33.235  INFO 12952 --- [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2018-02-04 11:12:33.245  INFO 12952 --- [  restartedMain] com.example.demo.DemoApplication         : Started DemoApplication in 11.638 seconds (JVM running for 12.499)
-```
-
 You can verify the application is up by hitting the URL: 
 
 http://localhost:8080/actuator/health
@@ -134,7 +99,7 @@ public class BootDemoApplication {
 }
 ```
 
-* Let’s start by looking at the only Java class generated
+* Let's start by looking at the only Java class generated
 * This is found in the folder source main java
 * The package is com.scmc.bootdemo
 * This is a simple Java class with one method
@@ -142,14 +107,14 @@ public class BootDemoApplication {
 * The main method calls the run method on the spring application class
 * Note the SpringBootApplication annotation. 
 * This annotation simply wraps common conventions for configuring a spring application.
-* I’ll come back to this class momentarily
+* I'll come back to this class momentarily
 
 **The application properties file can be found here: src/main/resources/application.properties**
 
-* To start, this file doesn’t contain anything. 
+* To start, this file doesn't contain anything. 
 * This file is one of several ways to set properties. 
 * By default, Spring Boot has actually defaulted many properties for you. 
-* Again, I’ll come back to this momentarily
+* Again, I'll come back to this momentarily
 
 **Next, Spring Initializr generated a test class for you.** 
 
@@ -171,7 +136,7 @@ public class BootDemoApplicationTests {
 * Again, we see several annotations on the class. 
 * SpringRunner means that Junit will use the spring runner class for test execution
 * SpringBootTest provides Spring Boot support for configuration
-* Let’s look at the last artifact generated
+* Let's look at the last artifact generated
 
 **The last file Spring Initializr generated was the gradle build file.**
 
@@ -181,7 +146,6 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.liquibase:liquibase-core')
 	compile('org.springframework.boot:spring-boot-starter-web')
-	compile('javax.xml.bind:jaxb-api:2.3.0')
 	runtime('org.springframework.boot:spring-boot-devtools')
 	runtime('com.h2database:h2')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
@@ -190,19 +154,19 @@ dependencies {
 
 * The final artifact is the gradle build file
 * You can find this in the root directory with the name build.gradle
-* I’m just showing the dependencies section of the script
+* I'm just showing the dependencies section of the script
 * Note that there are four dependencies that have the prefix spring boot starter
 * These are specialized libraries provided by Spring Boot to automatically bring in dependencies for you
 * For example, the web starter will bring in an embedded Tomcat web server for you. 
 * There are several ways you can override these starters. For example, you can 
-* Now that you’ve seen the generated files, let’s find out a little more about what Spring Boot is and does. 
+* Now that you've seen the generated files, let's find out a little more about what Spring Boot is and does. 
 
 **Spring Boot Goal - Provide a radically faster and widely accessible getting-started experience for all Spring development.**
 
 * What we have seen so far is a demonstration of one of the key goals of Spring Boot
 * Spring Boot wants you to be able to get started on feature development quickly
-* While there were a few hiccups, there’s nothing stopping us from adding actual value right now. 
-* Let’s look at another goal. 
+* While there were a few hiccups, there's nothing stopping us from adding actual value right now. 
+* Let's look at another goal. 
 
 **Spring Boot Goal - Absolutely no code generation and no requirement for XML configuration.**
 
@@ -214,7 +178,7 @@ dependencies {
 
 * Now you might be thinking, I just showed you an application with one line of code. 
 * Is Spring Boot just abstracting us away from a whole bunch of complexity? 
-* I can’t disagree with this
+* I can't disagree with this
 * Given that Boot is an abstraction, its important to understand some of the foundations of Spring before jumping into Boot
 
 **Spring Framework Features**
@@ -256,13 +220,13 @@ dependencies {
 
 * This is an example of a context using XML configuration
 * Note here that two beans are defined. 
-* While there are more attributes available, I’m just simply setting an ID and the class name for each bean.
+* While there are more attributes available, I'm just simply setting an ID and the class name for each bean.
 * When the spring container loads, myBean will be injected as a dependency of yourBean. 
 * This structure works well for smaller application, but you end up in XML hell when the application grows. 
 
 **Revisit Spring Boot Application Class**
 
-* Let’s revisit the Spring Boot application class that was generated.
+* Let's revisit the Spring Boot application class that was generated.
 * The SpringBootAnnotation is a good example of the path Spring chose over XML
 * Spring makes heavy use of Java annotations, which can decorate everything from classes to methods to member variables. 
 * SpringBootAnnotation will automatically scan your code for Spring Beans and register them in the container. 
@@ -271,7 +235,7 @@ dependencies {
 
 **Spring Boot Goal - Be opinionated out of the box but get out of the way quickly as requirements start to diverge from the defaults.**
 
-* Leveraging annotations in this manner achieves another of Spring Boots’ goals. 
+* Leveraging annotations in this manner achieves another of Spring Boots' goals. 
 * Spring Boot is opinionated. 
 * By using auto-configuration, Spring Boot automatically starts your application with certain dependencies. 
 * Specifically, this is done through Spring Boot Starter dependencies. 
@@ -292,9 +256,231 @@ dependencies {
 
 **Spring Boot Goal - Provide a range of non-functional features that are common to large classes of projects (such as embedded servers, security, metrics, health checks, and externalized configuration)**
 
-* That brings us to Spring Boot’s final goal
+* That brings us to Spring Boot's final goal
 * Boot provides us with a range of features in the form of these starters
 * As I noted in the previous goal, Spring Boot takes an opinion on how these features are configured
 * You can further customize based on your needs
+
+**Summary**
+
+* Let's summarize what's been talked about so far. 
+* You saw how Spring Initializr can be used to create a Spring Boot project
+* I showed you all of the options available to you
+* I discussed the key goals Spring Boot is trying to achieve
+* Get you started quickly 
+* No code generation and no XML requirements
+* Opinionated out of the box, but get out of the way as requirements necessitate
+* Provide support for a range of non-functional features
+* Next, let's focus on a common way Spring Boot is currently used.
+
+
+# 4 - Microservices with Spring Boot
+
+**Architecture Approaches**
+
+* There are two prevailing approaches to architecting systems 
+* First is the monolithic application
+* Monoliths are the most common approach for development.
+* Application is packaged as a single artifact
+* Whole application is deployed at once.
+* The second approach is Microservices
+* Application is broken down to multiple, distributed services
+* Services can be deployed independently.
+* There is also a gray area 
+* Application has several artifacts
+* Broken up between front-end and back-end code
+* Usually done to support multiple front-ends
+
+**Monolith Vs. Microservices**
+
+* I wasn't planning on getting into a battle over monolith versus microservices
+* Monoliths are not dead and they aren't bad. 
+* Pattern I'm seeing is to start with a monolith and then decompose
+* If you are interested in more, we can discuss after the session. 
+
+**Spring Boot Architecture Support**
+
+* For either monoliths or microservices, Spring Boot is an option to support server-side code
+* That said, in this presentation, I'm going to focus on Microservices
+
+**Survey from Redhat on Microservice Adoption**
+
+* The approach of using microservices architecture is continuing to grow at a rapid pace
+* Per a Redhat survey, almost 70 percent of respondents are using this approach
+* Given the growth of microservices, it should come as no surprise that the Spring Boot team has focused heavily on its support
+
+**Microservices with Spring Boot**
+
+* Let's look at a basic implementation of a Microservices architecture
+* I'll start with an Eureka Service Registry
+
+**Eureka Service Registry**
+
+* The Eureka Service registry supports the service discovery pattern in Microservice architecture.
+* It is provided by Netflix
+* Its also available via Spring Cloud's custom wrapper. 
+    * Can create from Spring Initializr
+* Eureka is a database of service instances and their locations
+* This database gets queried by clients or routers
+    * The goal here is to provide discoverability of services
+    * It also decouples the client or gateway from direct calls to the microservices
+
+**Eureka Server Demo**
+
+* I'll start by showing you the generated Eureka Server application code
+* Then I'll start the server
+* Next, I’ll show you the Eureka UI
+* Finally, we will update the application we started with for discovery
+
+Demo
+
+* Open Intellij to the Eureka Server application and explain the code
+* Note that the code was generated by Spring Initializr
+* Open command window to eureka server project and enter .\gradlew bootRun
+* Navigate to http://127.0.0.1:8761
+* Note there are no instances registered with Eureka
+* Let’s update the spring boot app we created earlier to be discovered.
+* Open the build.gradle and add the following:
+
+```
+dependencyManagement {
+  imports {
+    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Edgware.SR2'
+  }
+}
+
+compile('org.springframework.cloud:spring-cloud-starter-eureka')
+testCompile('org.springframework.cloud:spring-cloud-starter-eureka-server’)
+```
+
+* Next, open the BootDemoApplication class and add the following annotation on the class and the class for service instances:
+
+```
+@EnableEurekaClient
+
+@RestController
+class ServiceInstanceRestController {
+  @Autowired
+  private DiscoveryClient discoveryClient;
+  
+  @RequestMapping("/service-instances/{applicationName}")
+  public List<ServiceInstance> serviceInstancesByApplicationName(
+    @PathVariable String applicationName) {
+    return this.discoveryClient.getInstances(applicationName);
+  }
+}
+```
+
+* Next, create a file called bootstrap.properties in the resources folder and add the following content:
+
+```
+spring.application.name=restaurant-restaurant-service
+```
+
+* Finally, run the application from a command prompt using .\gradlew bootRun
+* After the application has started, we can go back to the Eureka home page and see the instance now registered.
+* Let’s stop the application as we are going to add some more to it. 
+
+**Microservices with Spring Boot**
+
+* We saw how to use Spring Boot, Spring Cloud and Eureka to support the discoverability of Microservices.
+* Next, let’s look at how we can support external configuration of our Microservices
+
+**Spring Configuration Server**
+
+* The Spring Configuration Server supports the Externalized Configuration Pattern for Microservice architecture.
+* The server is provided as part of the Spring Cloud library
+* Commonly, configurations that will change per environment are externalized, such as the database URL
+* The server properties are backed by a repository, which is usually Git.  
+
+**Spring Configuration Server Demo**
+
+* I’ll start by showing you the generated Spring Config Server application code
+* Next, I’ll show the backing GitHub repository for properties
+* Then I’ll start the configuration server
+* Finally, I’ll wire up a property to the initial application
+
+Demo
+
+* Open Intellij to the Configuration Server application and explain the code
+* Note that the code was generated by Spring Initializr
+* Open command window to config server project and enter .\gradlew bootRun
+* Navigate to http://localhost:8888/restaurant-service/restaurant-servce
+* Note the restaurant-service title property included
+* Let’s update the spring boot app we created earlier to be discovered.
+* Open the build.gradle and add the following:
+
+```
+compile('org.springframework.cloud:spring-cloud-starter-config’)
+```
+
+* Next, open the bootstrap.properties file for the service application and add the lines
+
+```
+spring.cloud.config.uri=http://localhost:8888 
+management.security.enabled=false
+```
+
+* Then, add the following to the BootDemoApplication class:
+
+```
+@RefreshScope
+@RestController
+class MessageRestController {
+
+  @Value("${title:Default Title}")
+  private String title;
+
+  @RequestMapping("/title")
+  String getTitle() {
+    return this.title;
+  }
+}
+```
+
+* Finally, run the application from a command prompt using .\gradlew bootRun
+* After the application has started, we can navigate here to verify the property: http://localhost:8080/title
+* Let’s again stop the application as we are going to add some more to it. 
+
+**Microservices with Spring Boot**
+
+* We’ve now covered discoverability of microservices through Eureka and externalized configuration through Spring Config
+* The microservice application we created can now communicate with both. 
+* The next step is to create an API gateway for a sample client application to communicate with
+
+**Spring Gateway**
+
+* The Spring Cloud Gateway supports the API gateway pattern for Microservices
+* Provided as part of the Spring Cloud library
+* An API Gateway is simply a single entry point for all clients, be it web, mobile or IoT
+* The gateway allows you to expose different APIs per client. 
+    * Mobile may require less data than web, for example
+* The gateway can handle your requests in multiple ways
+    * Can simply route or proxy the request
+    * Can also fan out the request to multiple service instances
+    * Can load balance to a discovery service
+* Let's look at a gateway implementation now
+
+**Spring Gateway Demo**
+
+* I’ll start by showing you the generated Spring Gateway Server application code
+* Then we will start the application and see the route
+
+Demo
+
+* Open Intellij to the Gateway Server application and explain the code
+* Note that the code was generated by Spring Initializr
+* Show the route and explain mapping to discovery server
+* Open command window to gateway server project and enter .\gradlew bootRun
+* Navigate to http://localhost:9001/restaurant-service/api/restaurants
+* Note that we will have this working once we wire up the service
+* Let’s stop the application for now
+
+**Microservices with Spring Boot**
+
+* The final step is to code up our restaurant review API
+* This will be implemented as a microservice
+
+**Microservice Demo**
 
 
