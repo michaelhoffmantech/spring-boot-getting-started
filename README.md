@@ -483,4 +483,156 @@ Demo
 
 **Microservice Demo**
 
+* To finalize the demo for Microservices, I’ll start by creating an entity for our sample microservice
+* Next, I’ll create the repository that will query restaurant information from the H2 database
+* Then finally, I’ll create the restaurant resource which exposes our api for submitting and viewing ratings on restaurants.
 
+
+Demo
+
+* Open Intellij to the Sprint Boot demo application
+* Create a class called RestaurantEntity in the package com.scmc.bootdemo.domain
+* Add the following code to the restaurant entity:
+
+```
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
+@Entity
+@Table(name = "restaurant")
+public class RestaurantEntity {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+  @SequenceGenerator(name = "sequenceGenerator")
+  @Column(name = "id")
+  private Long id;
+
+  @NotNull
+  @Column(name = "name", nullable = false)
+  private String name;
+
+  @NotNull
+  @Column(name = "rating", nullable = false)
+  private Integer rating;
+
+  public RestaurantEntity() {
+  }
+
+  public RestaurantEntity(String name, Integer rating) {
+    this.name = name;
+    this.rating = rating;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Integer getRating() {
+    return rating;
+  }
+
+  public void setRating(Integer rating) {
+    this.rating = rating;
+  }
+}
+```
+
+* Create a class called RestaurantRepository and place it in the package: com.scmc.bootdemo.repository
+* Add the following code:
+
+```
+import com.scmc.bootdemo.domain.RestaurantEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Long> {
+
+  List<RestaurantEntity> findAllByName(String name);
+}
+```
+
+* Create a class named RestaurantResource and add it to the package: com.scmc.bootdemo.web.rest
+* Add the following code:
+
+```
+import com.scmc.bootdemo.domain.RestaurantEntity;
+import com.scmc.bootdemo.repository.RestaurantRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.List;
+import java.util.OptionalDouble;
+
+@RestController
+@RequestMapping("/api")
+public class RestaurantResource {
+
+  private final RestaurantRepository restaurantRepository;
+  private final String title;
+
+  public RestaurantResource(RestaurantRepository restaurantRepository,
+    @Value("${title}") String title) {
+    this.restaurantRepository = restaurantRepository;
+    this.title = title;
+  }
+
+  @GetMapping("/restaurants")
+  public List<RestaurantEntity> getAllRestaurants() {
+    return restaurantRepository.findAll();
+  }
+
+  @GetMapping("/restaurants/{name}/rating")
+  public ResponseEntity<String> getRestaurantsRating(@PathVariable(name = "name") String name) {
+    OptionalDouble averageRating =
+        restaurantRepository.findAllByName(name)
+          .stream()
+          .mapToInt(RestaurantEntity::getRating)
+          .average();
+    if (averageRating.isPresent()) {
+      return ResponseEntity.ok(title + " - " + name + " average = " +
+          Double.valueOf(averageRating.getAsDouble()).intValue());
+    } else {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
+  @PostMapping("/restaurants")
+  public ResponseEntity<RestaurantEntity> createRestaurant(
+      @Valid @RequestBody RestaurantEntity restaurantEntity) throws Exception {
+    RestaurantEntity result = restaurantRepository.save(restaurantEntity);
+    return ResponseEntity
+        .created(new URI("/api/restaurants/" + result.getId()))
+        .body(result);
+  }
+
+}
+```
+
+* Next, let’s start the application up
+* With all four applications running, we should now be able to test.
+
+Postman
+
+* GET: http://localhost:9001/restaurant-service/api/restaurants
+* POST: http://localhost:9001/restaurant-service/api/restaurants  {"name":"McDonalds","rating":5}
+* GET: http://localhost:9001/restaurant-service/api/restaurants/McDonalds/rating
+
+**Summary**
