@@ -374,7 +374,7 @@ class ServiceInstanceRestController {
 * Next, create a file called bootstrap.properties in the resources folder and add the following content:
 
 ```
-spring.application.name=restaurant-restaurant-service
+spring.application.name=restaurant-service
 ```
 
 * Finally, run the application from a command prompt using .\gradlew bootRun
