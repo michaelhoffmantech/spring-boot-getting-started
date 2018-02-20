@@ -228,7 +228,7 @@ public class RestaurantEntity {
 ## Repository
 
 * Create a package named repository
-* Create a class named RestaurantRepository
+* Create an interface named RestaurantRepository
 
 ```
 import com.scmc.restaurantservice.domain.RestaurantEntity;
